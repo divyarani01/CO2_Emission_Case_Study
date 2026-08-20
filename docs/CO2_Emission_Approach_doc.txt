@@ -1,0 +1,108 @@
+Approach Document: CO₂ Emission Predictionfor Automotive Policy & Design Decisions
+
+1. Project Overview &amp; Business Context
+
+The Global Automotive Council wants to understand what drives vehicle CO₂ emissions and develop
+data-driven strategies for emission reduction. You have been provided a dataset containing detailed
+vehicle specifications, engine characteristics, fuel types, and recorded emission levels.
+Your role is that of an Automotive Data Analyst. By exploring the data, uncovering hidden patterns,
+and building a predictive model, you will help the council decide which vehicle design and policy
+levers have the greatest impact on reducing emissions. The end goal is a regression model that
+accurately estimates CO₂ emissions from vehicle features and a set of actionable recommendations.
+
+2. Dataset Overview
+
+You are provided a single CSV file with the following feature groups:
+• Vehicle Identity: Make, Model, Vehicle Class (e.g., SUV - SMALL, COMPACT, MID-SIZE).
+• Engine Specs: Engine Size (L), Cylinders, Transmission type.
+• Fuel Profile: Fuel Type (multiple categories representing different fuel standards).
+• Consumption Metrics: Multiple fuel consumption measures across city, highway, and
+combined driving conditions, in different units.
+• Target Variable: CO₂ Emissions (g/km).
+
+3. Data Preparation &amp; Engineering Guidelines
+
+Load and Inspect Data Before writing any model code, study the shape and quality of the data. Check for missing values,
+duplicated rows, and data types. Pay attention to the distribution of CO₂ Emissions: is it roughly
+normal, or heavily skewed? Use histograms and boxplots to get an initial sense of how the target
+variable behaves.
+Outlier Detection
+Look for extreme values across numerical columns. Think about whether these are data errors or
+genuine rare cases. In an automotive context, extreme values often represent high-performance or
+commercial vehicles. Decide on a strategy to handle them: should you drop them, cap them, or leave
+them in? Justify your choice.
+Multicollinearity Check
+This dataset has a critical trap. Some of the numerical features are measuring nearly the same
+underlying signal in different units or contexts. If you include all of them in a linear model, you will run
+into severe multicollinearity. Use a suitable diagnostic to identify and remove redundant columns
+before modeling. Think about what metric quantifies how much one feature can be predicted from the
+others.
+Feature Engineering
+• Categorical Features: Several columns are categorical. Decide how to encode them based on
+the type of model you plan to use. Different model families have different requirements here.
+• Scaling: Consider whether the numerical features in your dataset are on comparable scales.
+Some models are sensitive to feature magnitude; if you choose such a model, apply an
+appropriate transformation.
+• Pipeline: Think about wrapping your preprocessing and modeling steps into a unified pipeline.
+This prevents data leakage and makes your workflow reproducible.
+
+4. Model Building
+
+Choose a regression model that makes sense for this problem. Consider the following when making
+your choice:
+• How many features will you have after encoding? If the number is large, does your chosen
+model handle high-dimensional data well?
+• Is there residual multicollinearity even after feature selection? If so, does your model have a
+built-in mechanism to handle it?
+• Do you prioritize interpretability (understanding which features matter) or pure prediction
+accuracy?
+Split your data into training and test sets. Use cross-validation to ensure your model generalizes well
+and is not overfitting to any particular subset of the data. Experiment with any tunable parameters
+your model offers.
+Evaluation
+Report multiple evaluation metrics to give a well-rounded view of model performance. Think about
+which metrics capture average-case accuracy, which ones penalize large errors, and which ones tell
+you the proportion of variance explained. Use at least three complementary metrics and reflect on
+what each one tells you about the model.
+
+5. Hints &amp; Analysis Tips
+
+5.1. The Multicollinearity Trap
+• The Goal: Understand why blindly including all numerical features can make your model
+unreliable.
+• Hint: Check how the fuel consumption columns relate to each other. Some of them are nearly
+identical, and one is the mathematical inverse of the others. If your diagnostic metric returns
+absurdly high values, that is your signal to simplify.
+
+5.2. Fuel Type Comparison
+• The Goal: Identify whether certain fuel categories produce systematically different emission
+levels.
+• Hint: Use grouped visualizations to compare CO₂ Emissions across fuel types. Look for
+categories that consistently sit higher or lower. Ask yourself: is this a property of the fuel, or
+are vehicles using that fuel also different in engine size and weight?
+
+5.3. Which Feature Matters More?
+• The Goal: Determine which numerical features are the strongest predictors of emissions.
+• Hint: Start with a correlation heatmap. Then, after training your model, look at feature
+importances or coefficients. Do the two methods agree? If a feature has high correlation but
+low model importance, think about what could explain that.
+
+5.4. Outlier Vehicles
+• The Goal: Find vehicles that the model gets wrong by a large margin and understand why.
+• Hint: After prediction, compute residuals (actual minus predicted). Sort by absolute error and
+inspect the worst cases. Do they belong to unusual vehicle classes, rare fuel types, or
+extreme engine sizes? These edge cases reveal where your model&#39;s assumptions break
+down.
+
+5.5. From Model to Recommendation
+• The Goal: Translate your model&#39;s findings into actionable policy or design recommendations.
+• Hint: Look at which features your model weighs most heavily. If a consumption-related
+feature dominates, the recommendation is about efficiency mandates. If vehicle class matters
+a lot, the recommendation shifts to fleet composition. Ground your suggestions in the data,
+not assumptions.
+
+5.6. Visual Validation
+• The Goal: Go beyond a single number to visually confirm model quality.
+• Hint: Plot predicted vs. actual values with a reference line. Are the points scattered randomly
+around the line, or is there a systematic curve? If the model consistently under-predicts at
+one end, that tells you something about the linearity of the relationship in that region.
